@@ -3,10 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>СбДП</title>
+    <title>Get data</title>
+    <!--  Firebase SDK (v 8.x) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Firebase
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "beer-58b91.firebaseapp.com",
+            databaseURL: "https://beer-58b91-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "beer-58b91",
+            storageBucket: "beer-58b91.appspot.com",
+            messagingSenderId: "MESSAGING_SENDER_ID",
+            appId: "APP_ID" //
+        };
+
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function saveData() {
+            console.log('Функция saveData была вызвана');
+            // Получаем информацию о пользователе
+            const userAgent = navigator.userAgent;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const language = navigator.language || navigator.userLanguage;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            // Формируем объект данных
+            const userData = {
+                userAgent,
+                screenWidth,
+                screenHeight,
+                language,
+                timezone,
+                timestamp: new Date().toISOString()
+            };
+
+            // Отправляем данные в Firebase
+            database.ref('user_data').push(userData)
+                .then(() => {
+                    console.log('Данные успешно сохранены');
+                    // Редирект на страницу home.html
+                    window.location.href = 'home.html';
+                })
+                .catch((error) => {
+                    console.error('Ошибка при сохранении данных:', error);
+                });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        window.onload = saveData;
+    </script>
 </head>
 <body>
-<h1>С</h1>
-<p>Пожалуйста, подождите, пока мы ...</p>
+<h1>Сбор...</h1>
+<p>Пожалуйста, подождите, пока мы...</p>
 </body>
 </html>
