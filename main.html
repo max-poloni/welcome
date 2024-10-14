@@ -36,18 +36,42 @@
         const auth = firebase.auth();
 
         // Функция для загрузки данных пользователя из localStorage
-        function loadUsername() {
+        // Функция для загрузки данных пользователя из localStorage
+        function loadUserData() {
             const username = localStorage.getItem('currentUser'); // Получаем имя пользователя из localStorage
             if (username) {
-                document.getElementById('username').innerText = `Username: ${username}`;
+                const userRef = database.ref('users/' + username); // Загружаем данные по логину
+
+                userRef.once('value').then((snapshot) => {
+                    let userData = snapshot.val();
+                    if (userData) {
+                        // Если баланс не существует, инициализируем его с 10 пивами
+                        if (!userData.balance) {
+                            userData.balance = 10;
+                            userRef.update({ balance: userData.balance }); // Обновляем баланс в базе данных
+                        }
+                        // Отображаем имя пользователя и баланс
+                        document.getElementById('username').innerText = `Username: ${username}`;
+                        document.getElementById('balance').innerHTML = `Баланс: ${userData.balance} 🍺`;
+                    } else {
+                        document.getElementById('username').innerText = 'Username: Гость';
+                        document.getElementById('balance').innerText = 'Баланс: 0 🍺';
+                    }
+                });
             } else {
-                document.getElementById('username').innerText = 'Username: Гость'; // Если пользователя нет
+                document.getElementById('username').innerText = 'Username: Гость'; // Если пользователь не авторизован
+                document.getElementById('balance').innerText = 'Баланс: 0 🍺';
             }
         }
 
         // Вызываем эту функцию при загрузке страницы
         window.onload = function () {
-            loadUsername();
+            loadUserData();
+        };
+
+        // Вызываем эту функцию при загрузке страницы
+        window.onload = function () {
+            loadUserData();
         };
 
         // Функция для открытия модального окна
@@ -70,6 +94,7 @@
 <header>
     <h1>Games</h1>
     <div id="username">Username: Гость</div> <!-- Здесь отобразится имя пользователя -->
+    <div id="balance">Баланс: 0 🍺</div> <!-- Здесь отобразится баланс пользователя -->
 </header>
 <main>
     <div class="slider">
