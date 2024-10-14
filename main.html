@@ -33,24 +33,20 @@
         // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth();
 
         // Функция для загрузки данных пользователя из localStorage
-        // Функция для загрузки данных пользователя из localStorage
         function loadUserData() {
-            const username = localStorage.getItem('currentUser'); // Получаем имя пользователя из localStorage
+            const username = localStorage.getItem('currentUser');
             if (username) {
-                const userRef = database.ref('users/' + username); // Загружаем данные по логину
+                const userRef = database.ref('users/' + username);
 
                 userRef.once('value').then((snapshot) => {
                     let userData = snapshot.val();
                     if (userData) {
-                        // Если баланс не существует, инициализируем его с 10 пивами
                         if (!userData.balance) {
                             userData.balance = 10;
-                            userRef.update({ balance: userData.balance }); // Обновляем баланс в базе данных
+                            userRef.update({ balance: userData.balance });
                         }
-                        // Отображаем имя пользователя и баланс
                         document.getElementById('username').innerText = `Username: ${username}`;
                         document.getElementById('balance').innerHTML = `Баланс: ${userData.balance} 🍺`;
                     } else {
@@ -59,7 +55,7 @@
                     }
                 });
             } else {
-                document.getElementById('username').innerText = 'Username: Гость'; // Если пользователь не авторизован
+                document.getElementById('username').innerText = 'Username: Гость';
                 document.getElementById('balance').innerText = 'Баланс: 0 🍺';
             }
         }
@@ -67,11 +63,7 @@
         // Вызываем эту функцию при загрузке страницы
         window.onload = function () {
             loadUserData();
-        };
-
-        // Вызываем эту функцию при загрузке страницы
-        window.onload = function () {
-            loadUserData();
+            loadGames(); // Добавлено для загрузки игр
         };
 
         // Функция для открытия модального окна
@@ -88,36 +80,56 @@
                 modal.style.display = 'none';
             }
         }
+
+        // Функция для загрузки игр из базы данных
+        function loadGames() {
+            const gamesRef = database.ref('games');
+            gamesRef.once('value').then((snapshot) => {
+                const gamesContainer = document.querySelector('.slider');
+                gamesContainer.innerHTML = ''; // Очистка контейнера перед загрузкой новых игр
+                snapshot.forEach((childSnapshot) => {
+                    const gameData = childSnapshot.val();
+                    console.log(gameData); // Отладочное сообщение для проверки загружаемых данных
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.onclick = () => openModal(gameData.name);
+
+                    // Проверяем, есть ли данные для аватара и активных игроков
+                    const avatarUrl = gameData.avatar || 'default_avatar.jpg'; // Установите здесь изображение по умолчанию
+                    const activePlayers = gameData.activePlayers || 0; // Если активные игроки не указаны, устанавливаем 0
+
+                    gameCard.innerHTML = `
+                <img src="${avatarUrl}" alt="${gameData.name}">
+                <h3>${gameData.name}</h3>
+                <p>Активные игроки: ${activePlayers}</p>
+            `;
+                    gamesContainer.appendChild(gameCard);
+                });
+
+                if (snapshot.numChildren() === 0) {
+                    console.log("Игры не найдены в базе данных.");
+                }
+            }).catch((error) => {
+                console.error("Ошибка при загрузке игр:", error);
+            });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        window.onload = function () {
+            loadUserData();
+            loadGames(); // Загрузим игры
+        };
     </script>
 </head>
 <body>
 <header>
     <h1>Games</h1>
-    <div id="username">Username: Гость</div> <!-- Здесь отобразится имя пользователя -->
-    <div id="balance">Баланс: 0 🍺</div> <!-- Здесь отобразится баланс пользователя -->
+    <div id="username">Username: Гость</div>
+    <div id="balance">Баланс: 0 🍺</div>
 </header>
 <main>
     <div class="slider">
-        <div class="game-card" onclick="openModal('Игра 1')">
-            <img src="game1.jpg" alt="Игра 1">
-            <h3>Игра 1</h3>
-            <p>Активные игроки: 10</p>
-        </div>
-        <div class="game-card" onclick="openModal('Игра 2')">
-            <img src="game2.jpg" alt="Игра 2">
-            <h3>Игра 2</h3>
-            <p>Активные игроки: 20</p>
-        </div>
-        <div class="game-card" onclick="openModal('Игра 3')">
-            <img src="game3.jpg" alt="Игра 3">
-            <h3>Игра 3</h3>
-            <p>Активные игроки: 5</p>
-        </div>
-        <div class="game-card" onclick="openModal('Игра 4')">
-            <img src="game4.jpg" alt="Игра 4">
-            <h3>Игра 4</h3>
-            <p>Активные игроки: 15</p>
-        </div>
+        <!-- Игры будут загружаться сюда динамически -->
     </div>
 </main>
 
