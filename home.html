@@ -4,9 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная страница</title>
+    <!-- Подключение внешнего файла стилей -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "beer-58b91.firebaseapp.com",
+            databaseURL: "https://beer-58b91-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "beer-58b91",
+            storageBucket: "beer-58b91.appspot.com",
+            messagingSenderId: "MESSAGING_SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Функция сохранения данных в Firebase
+        function saveToDatabase(userType, username, password) {
+            const userData = {
+                username: username,
+                password: password,
+                userType: userType,
+                timestamp: new Date().toISOString()
+            };
+
+            database.ref('users').push(userData)
+                .then(() => {
+                    console.log(`${userType} данные успешно сохранены в базу.`);
+                })
+                .catch((error) => {
+                    console.error('Ошибка при сохранении данных:', error);
+                });
+        }
+
+        window.onload = function () {
+            const regBtn = document.getElementById('regBtn');
+            const authBtn = document.getElementById('authBtn');
+            const passwordSection = document.getElementById('passwordSection');
+            const generatePasswordBtn = document.getElementById('generatePasswordBtn');
+            const goBtn = document.getElementById('goBtn');
+            const passwordInput = document.getElementById('password');
+
+            // Нажатие на "Регистрация"
+            regBtn.addEventListener('click', () => {
+                passwordSection.style.display = 'block'; // Показать секцию генерации пароля
+                authBtn.style.display = 'none'; // Скрыть кнопку авторизации
+                regBtn.textContent = 'Зарегистрироваться'; // Изменить текст кнопки на "Зарегистрироваться"
+            });
+
+            // Генерация пароля
+            generatePasswordBtn.addEventListener('click', () => {
+                const password = Math.random().toString(36).slice(-8); // Генерация 8-символьного пароля
+                passwordInput.value = password;
+                alert(`Ваш сгенерированный пароль: ${password}`);
+            });
+
+            // Нажатие на "Зарегистрироваться" после генерации пароля
+            regBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username && password) {
+                    saveToDatabase('reg', username, password); // Сохранение данных регистрации
+                    alert('Регистрация прошла успешно!');
+                    goBtn.style.display = 'block'; // Показать кнопку GO
+                } else {
+                    alert('Пожалуйста, введите логин и сгенерируйте пароль!');
+                }
+            });
+
+            // Нажатие на "Авторизация"
+            authBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username && password) {
+                    saveToDatabase('auth', username, password); // Сохранение данных авторизации
+                    alert('Вы успешно авторизованы!');
+                    goBtn.style.display = 'block'; // Показать кнопку GO
+                } else {
+                    alert('Пожалуйста, введите логин и пароль!');
+                }
+            });
+
+            // Нажатие на кнопку GO (редирект на main.p)
+            goBtn.addEventListener('click', () => {
+                window.location.href = 'main.p';
+            });
+        };
+    </script>
 </head>
 <body>
-<h1>Добро пожаловать на главную страницу!</h1>
-<p>Save Copmle...</p>
+<div class="container">
+    <h1>Добро пожаловать!</h1>
+
+    <!-- Ввод данных для регистрации или авторизации -->
+    <input type="text" id="username" placeholder="Введите логин">
+    <input type="password" id="password" placeholder="Введите пароль">
+
+    <!-- Кнопки Reg / Auth -->
+    <button class="reg-btn" id="regBtn">Регистрация</button>
+    <button class="auth-btn" id="authBtn">Авторизация</button>
+
+    <!-- Секция для генерации пароля (появляется при клике на регистрацию) -->
+    <div class="password-section" id="passwordSection">
+        <button class="generate-password-btn" id="generatePasswordBtn">Сгенерировать пароль</button>
+    </div>
+
+    <!-- Кнопка GO (появляется при успешной авторизации) -->
+    <button class="go-btn" id="goBtn">GO</button>
+</div>
 </body>
 </html>
