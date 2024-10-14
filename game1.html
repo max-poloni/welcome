@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beer Collect</title>
+    <style>
+        #betInput {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        #beerEmoji {
+            font-size: 24px;
+        }
+        #confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h2>Beer Collect</h2>
+<div>
+    <input type="number" id="betInput" min="1" max="100" placeholder="Введите ставку (1-100)">
+    <span id="beerEmoji">🍺</span>
+</div>
+<button id="playButton">Play</button>
+<div id="result"></div>
+<div id="confetti">🎉</div>
+
+<script>
+    const betInput = document.getElementById('betInput');
+    const playButton = document.getElementById('playButton');
+    const resultDiv = document.getElementById('result');
+    const confettiDiv = document.getElementById('confetti');
+
+    //  Firebase, инициализированный на главной странице
+    const database = window.parent.firebase.database();
+
+    playButton.addEventListener('click', playGame);
+
+    function playGame() {
+        console.log('Play button clicked'); // Отладочный вывод
+        const betAmount = parseInt(betInput.value);
+        if (betAmount < 1 || betAmount > 100 || isNaN(betAmount)) {
+            alert('Пожалуйста, введите сумму от 1 до 100');
+            return;
+        }
+
+        const username = localStorage.getItem('currentUser') || 'Гость';
+        console.log('Current user:', username); // Отладочный вывод
+
+        // Проверяем баланс пользователя перед игрой
+        const userRef = database.ref('users/' + username);
+        userRef.once('value').then((snapshot) => {
+            let userData = snapshot.val();
+            console.log('User data:', userData); // Отладочный вывод
+            if (userData && userData.balance >= betAmount) {
+                playGameLogic(betAmount, username, userData.balance);
+            } else {
+                alert('Недостаточно средств для ставки');
+            }
+        }).catch((error) => {
+            console.error('Error fetching user data:', error);
+        });
+    }
+
+    function playGameLogic(betAmount, username, currentBalance) {
+        const gameName = 'Beer Collect';
+        const currentDate = new Date().toISOString();
+        const winCoefficient = Math.random() * 2 + 1; // Случайный коэффициент от 1 до 3
+        const isWin = Math.random() < 0.5; // 50% шанс на победу
+        const status = isWin ? 'Win' : 'Lose';
+        const winAmount = isWin ? Math.floor(betAmount * winCoefficient) : 0;
+
+        // Создаем событие "Bet"
+        const betEvent = {
+            gameName: gameName,
+            username: username,
+            dateTime: currentDate,
+            betSum: betAmount,
+            status: status,
+            winSum: winAmount,
+            winCoefficient: winCoefficient.toFixed(2)
+        };
+
+        console.log('Bet event:', betEvent); // Отладочный вывод
+
+        // Записываем событие в базу данных
+        database.ref('bets').push(betEvent);
+
+        // Обновляем баланс пользователя
+        const newBalance = currentBalance + winAmount - betAmount;
+        database.ref('users/' + username).update({ balance: newBalance });
+
+        // Обновляем отображение баланса на главной странице
+        window.parent.document.getElementById('balance').innerHTML = `Баланс: ${newBalance} 🍺`;
+
+        // Отображаем результат
+        if (isWin) {
+            resultDiv.innerHTML = `Поздравляем! Вы выиграли ${winAmount} 🍺 (коэффициент: ${winCoefficient.toFixed(2)})`;
+            showConfetti();
+        } else {
+            resultDiv.innerHTML = `К сожалению, вы проиграли ${betAmount} 🍺`;
+        }
+    }
+
+    function showConfetti() {
+        confettiDiv.style.display = 'block';
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.innerText = '🎉';
+            confetti.style.position = 'absolute';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = Math.random() * 100 + 'vh';
+            confetti.style.fontSize = Math.random() * 20 + 10 + 'px';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            confettiDiv.appendChild(confetti);
+        }
+        setTimeout(() => {
+            confettiDiv.style.display = 'none';
+            confettiDiv.innerHTML = ''; // Очищаем конфетти
+        }, 3000);
+    }
+</script>
+</body>
+</html>
