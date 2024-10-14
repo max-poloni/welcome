@@ -63,14 +63,34 @@
         // Вызываем эту функцию при загрузке страницы
         window.onload = function () {
             loadUserData();
-            loadGames(); // Добавлено для загрузки игр
+            loadGames();
         };
 
         // Функция для открытия модального окна
         function openModal(gameName) {
             const modal = document.getElementById('gameModal');
             modal.style.display = 'block';
-            document.getElementById('modalContent').innerText = `Информация о ${gameName}`;
+            if (gameName === 'Beer Collect') {
+                loadGame1();
+            } else {
+                document.getElementById('modalContent').innerText = `Информация о ${gameName}`;
+            }
+        }
+
+        // Функция для загрузки Game 1
+        function loadGame1() {
+            const modalContent = document.getElementById('modalContent');
+            fetch('game1.html')
+                .then(response => response.text())
+                .then(data => {
+                    modalContent.innerHTML = data;
+                    // Выполняем скрипт из game1.html
+                    const script = modalContent.querySelector('script');
+                    if (script) {
+                        eval(script.textContent);
+                    }
+                })
+                .catch(error => console.error('Ошибка при загрузке game1.html:', error));
         }
 
         // Закрытие модального окна при клике вне его
@@ -86,23 +106,22 @@
             const gamesRef = database.ref('games');
             gamesRef.once('value').then((snapshot) => {
                 const gamesContainer = document.querySelector('.slider');
-                gamesContainer.innerHTML = ''; // Очистка контейнера перед загрузкой новых игр
+                gamesContainer.innerHTML = '';
                 snapshot.forEach((childSnapshot) => {
                     const gameData = childSnapshot.val();
-                    console.log(gameData); // Отладочное сообщение для проверки загружаемых данных
+                    console.log(gameData);
                     const gameCard = document.createElement('div');
                     gameCard.className = 'game-card';
                     gameCard.onclick = () => openModal(gameData.name);
 
-                    // Проверяем, есть ли данные для аватара и активных игроков
-                    const avatarUrl = gameData.avatar || 'default_avatar.jpg'; // Установите здесь изображение по умолчанию
-                    const activePlayers = gameData.activePlayers || 0; // Если активные игроки не указаны, устанавливаем 0
+                    const avatarUrl = gameData.avatar || 'default_avatar.jpg';
+                    const activePlayers = gameData.activePlayers || 0;
 
                     gameCard.innerHTML = `
-                <img src="${avatarUrl}" alt="${gameData.name}">
-                <h3>${gameData.name}</h3>
-                <p>Активные игроки: ${activePlayers}</p>
-            `;
+                        <img src="${avatarUrl}" alt="${gameData.name}">
+                        <h3>${gameData.name}</h3>
+                        <p>Активные игроки: ${activePlayers}</p>
+                    `;
                     gamesContainer.appendChild(gameCard);
                 });
 
@@ -113,12 +132,6 @@
                 console.error("Ошибка при загрузке игр:", error);
             });
         }
-
-        // Вызываем функцию при загрузке страницы
-        window.onload = function () {
-            loadUserData();
-            loadGames(); // Загрузим игры
-        };
     </script>
 </head>
 <body>
@@ -136,7 +149,7 @@
 <!-- Модальное окно -->
 <div id="gameModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" onclick="document.getElementById('gameModal').style.display='none'">&times;</span>
         <div id="modalContent"></div>
     </div>
 </div>
