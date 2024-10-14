@@ -76,6 +76,7 @@
                             database.ref('users/' + username).set(userData)
                                 .then(() => {
                                     localStorage.setItem('currentUser', username);
+                                    console.log(`Текущий пользователь сохранен: ${username}`);
                                     window.location.href = 'main.html';
                                 })
                                 .catch((error) => {
