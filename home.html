@@ -39,6 +39,17 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Функция проверки наличия пользователя
+        function checkUserExists(username, callback) {
+            database.ref('users').orderByChild('username').equalTo(username).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    callback(true); // Пользователь существует
+                } else {
+                    callback(false); // Пользователь не найден
+                }
+            });
+        }
+
         // Функция сохранения данных в Firebase
         function saveToDatabase(userType, username, password) {
             const userData = {
@@ -59,7 +70,6 @@
 
         window.onload = function () {
             const regBtn = document.getElementById('regBtn');
-            const authBtn = document.getElementById('authBtn');
             const passwordSection = document.getElementById('passwordSection');
             const generatePasswordBtn = document.getElementById('generatePasswordBtn');
             const goBtn = document.getElementById('goBtn');
@@ -67,9 +77,23 @@
 
             // Нажатие на "Регистрация"
             regBtn.addEventListener('click', () => {
-                passwordSection.style.display = 'block'; // Показать секцию генерации пароля
-                authBtn.style.display = 'none'; // Скрыть кнопку авторизации
-                regBtn.textContent = 'Зарегистрироваться'; // Изменить текст кнопки на "Зарегистрироваться"
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username && password) {
+                    // Проверка существования пользователя
+                    checkUserExists(username, (exists) => {
+                        if (exists) {
+                            alert('Пользователь с таким именем уже существует!');
+                        } else {
+                            saveToDatabase('reg', username, password); // Сохранение данных
+                            alert('Регистрация прошла успешно!');
+                            goBtn.style.display = 'block'; // Показать кнопку GO
+                        }
+                    });
+                } else {
+                    alert('Пожалуйста, введите логин и сгенерируйте пароль!');
+                }
             });
 
             // Генерация пароля
@@ -79,37 +103,9 @@
                 alert(`Ваш сгенерированный пароль: ${password}`);
             });
 
-            // Нажатие на "Зарегистрироваться" после генерации пароля
-            regBtn.addEventListener('click', () => {
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-
-                if (username && password) {
-                    saveToDatabase('reg', username, password); // Сохранение данных регистрации
-                    alert('Регистрация прошла успешно!');
-                    goBtn.style.display = 'block'; // Показать кнопку GO
-                } else {
-                    alert('Пожалуйста, введите логин и сгенерируйте пароль!');
-                }
-            });
-
-            // Нажатие на "Авторизация"
-            authBtn.addEventListener('click', () => {
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-
-                if (username && password) {
-                    saveToDatabase('auth', username, password); // Сохранение данных авторизации
-                    alert('Вы успешно авторизованы!');
-                    goBtn.style.display = 'block'; // Показать кнопку GO
-                } else {
-                    alert('Пожалуйста, введите логин и пароль!');
-                }
-            });
-
-            // Нажатие на кнопку GO (редирект на main.p)
+            // Нажатие на кнопку GO (редирект на main)
             goBtn.addEventListener('click', () => {
-                window.location.href = 'main.p';
+                window.location.href = 'main';
             });
         };
     </script>
