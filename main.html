@@ -35,32 +35,19 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        // Функция для загрузки данных пользователя
-        function loadUserData() {
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    const userId = user.uid; // Получаем uid текущего пользователя
-                    database.ref('users/' + userId).once('value')
-                        .then((snapshot) => {
-                            const userData = snapshot.val();
-                            if (userData) {
-                                document.getElementById('username').innerText = `Username: ${userData.username}`;
-                            } else {
-                                document.getElementById('username').innerText = 'Username: Гость';
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Ошибка при получении данных пользователя:', error);
-                        });
-                } else {
-                    document.getElementById('username').innerText = 'Username: Гость'; // Если пользователь не авторизован
-                }
-            });
+        // Функция для загрузки данных пользователя из localStorage
+        function loadUsername() {
+            const username = localStorage.getItem('currentUser'); // Получаем имя пользователя из localStorage
+            if (username) {
+                document.getElementById('username').innerText = `Username: ${username}`;
+            } else {
+                document.getElementById('username').innerText = 'Username: Гость'; // Если пользователя нет
+            }
         }
 
         // Вызываем эту функцию при загрузке страницы
         window.onload = function () {
-            loadUserData();
+            loadUsername();
         };
 
         // Функция для открытия модального окна
@@ -82,7 +69,7 @@
 <body>
 <header>
     <h1>Games</h1>
-    <div id="username">Username: Гость</div>
+    <div id="username">Username: Гость</div> <!-- Здесь отобразится имя пользователя -->
 </header>
 <main>
     <div class="slider">
