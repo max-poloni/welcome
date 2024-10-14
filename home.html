@@ -10,16 +10,11 @@
 
         gtag('config', 'G-8T173410KK');
     </script>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get data</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
-    <!-- Подключение внешнего файла стилей -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -43,34 +38,16 @@
         function checkUserExists(username, callback) {
             database.ref('users').orderByChild('username').equalTo(username).once('value', (snapshot) => {
                 if (snapshot.exists()) {
-                    callback(true); // Пользователь существует
+                    callback(snapshot); // Пользователь существует, передаем данные пользователя
                 } else {
-                    callback(false); // Пользователь не найден
+                    callback(null); // Пользователь не найден
                 }
             });
         }
 
-        // Функция сохранения данных в Firebase
-        function saveToDatabase(userType, username, password) {
-            const userData = {
-                username: username,
-                password: password,
-                userType: userType,
-                timestamp: new Date().toISOString()
-            };
-
-            database.ref('users').push(userData)
-                .then(() => {
-                    console.log(`${userType} данные успешно сохранены в базу.`);
-                })
-                .catch((error) => {
-                    console.error('Ошибка при сохранении данных:', error);
-                });
-        }
-
         window.onload = function () {
             const regBtn = document.getElementById('regBtn');
-            const passwordSection = document.getElementById('passwordSection');
+            const authBtn = document.getElementById('authBtn');
             const generatePasswordBtn = document.getElementById('generatePasswordBtn');
             const goBtn = document.getElementById('goBtn');
             const passwordInput = document.getElementById('password');
@@ -82,17 +59,56 @@
 
                 if (username && password) {
                     // Проверка существования пользователя
-                    checkUserExists(username, (exists) => {
-                        if (exists) {
+                    checkUserExists(username, (snapshot) => {
+                        if (snapshot) {
                             alert('Пользователь с таким именем уже существует!');
                         } else {
-                            saveToDatabase('reg', username, password); // Сохранение данных
-                            alert('Регистрация прошла успешно!');
-                            goBtn.style.display = 'block'; // Показать кнопку GO
+                            const userData = {
+                                username: username,
+                                password: password,
+                                userType: 'reg',
+                                timestamp: new Date().toISOString()
+                            };
+                            database.ref('users').push(userData)
+                                .then(() => {
+                                    localStorage.setItem('currentUser', username);
+                                    window.location.href = 'main.html';
+                                })
+                                .catch((error) => {
+                                    console.error('Ошибка при регистрации:', error);
+                                    alert('Ошибка при регистрации, попробуйте снова.');
+                                });
                         }
                     });
                 } else {
                     alert('Пожалуйста, введите логин и сгенерируйте пароль!');
+                }
+            });
+
+            // Нажатие на "Авторизация"
+            authBtn.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username && password) {
+                    checkUserExists(username, (snapshot) => {
+                        if (snapshot) {
+                            const userData = snapshot.val();
+                            const userKey = Object.keys(userData)[0]; // Получаем первый ключ пользователя
+                            const savedPassword = userData[userKey].password;
+
+                            if (savedPassword === password) {
+                                localStorage.setItem('currentUser', username); // Сохраняем пользователя
+                                window.location.href = 'main.html'; // Переход на главную
+                            } else {
+                                alert('Неверный пароль, попробуйте снова.');
+                            }
+                        } else {
+                            alert('Пользователь с таким именем не найден.');
+                        }
+                    });
+                } else {
+                    alert('Пожалуйста, введите логин и пароль.');
                 }
             });
 
@@ -105,7 +121,7 @@
 
             // Нажатие на кнопку GO (редирект на main)
             goBtn.addEventListener('click', () => {
-                window.location.href = 'main';
+                window.location.href = 'main.html';
             });
         };
     </script>
@@ -122,13 +138,13 @@
     <button class="reg-btn" id="regBtn">Регистрация</button>
     <button class="auth-btn" id="authBtn">Авторизация</button>
 
-    <!-- Секция для генерации пароля (появляется при клике на регистрацию) -->
+    <!-- Секция для генерации пароля -->
     <div class="password-section" id="passwordSection">
         <button class="generate-password-btn" id="generatePasswordBtn">Сгенерировать пароль</button>
     </div>
 
-    <!-- Кнопка GO (появляется при успешной авторизации) -->
-    <button class="go-btn" id="goBtn">GO</button>
+    <!-- Кнопка GO -->
+    <button class="go-btn" id="goBtn" style="display: none;">GO</button>
 </div>
 </body>
 </html>
