@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T173410KK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-8T173410KK');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="styless-main.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Firebase конфигурация
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "beer-58b91.firebaseapp.com",
+            databaseURL: "https://beer-58b91-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "beer-58b91",
+            storageBucket: "beer-58b91.appspot.com",
+            messagingSenderId: "MESSAGING_SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        // Функция для загрузки данных пользователя
+        function loadUserData() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    const userId = user.uid; // Получаем uid текущего пользователя
+                    database.ref('users/' + userId).once('value')
+                        .then((snapshot) => {
+                            const userData = snapshot.val();
+                            if (userData) {
+                                document.getElementById('username').innerText = `Username: ${userData.username}`;
+                            } else {
+                                document.getElementById('username').innerText = 'Username: Гость';
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Ошибка при получении данных пользователя:', error);
+                        });
+                } else {
+                    document.getElementById('username').innerText = 'Username: Гость'; // Если пользователь не авторизован
+                }
+            });
+        }
+
+        // Вызываем эту функцию при загрузке страницы
+        window.onload = function () {
+            loadUserData();
+        };
+
+        // Функция для открытия модального окна
+        function openModal(gameName) {
+            const modal = document.getElementById('gameModal');
+            modal.style.display = 'block';
+            document.getElementById('modalContent').innerText = `Информация о ${gameName}`;
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('gameModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+<header>
+    <h1>Games</h1>
+    <div id="username">Username: Гость</div>
+</header>
+<main>
+    <div class="slider">
+        <div class="game-card" onclick="openModal('Игра 1')">
+            <img src="game1.jpg" alt="Игра 1">
+            <h3>Игра 1</h3>
+            <p>Активные игроки: 10</p>
+        </div>
+        <div class="game-card" onclick="openModal('Игра 2')">
+            <img src="game2.jpg" alt="Игра 2">
+            <h3>Игра 2</h3>
+            <p>Активные игроки: 20</p>
+        </div>
+        <div class="game-card" onclick="openModal('Игра 3')">
+            <img src="game3.jpg" alt="Игра 3">
+            <h3>Игра 3</h3>
+            <p>Активные игроки: 5</p>
+        </div>
+        <div class="game-card" onclick="openModal('Игра 4')">
+            <img src="game4.jpg" alt="Игра 4">
+            <h3>Игра 4</h3>
+            <p>Активные игроки: 15</p>
+        </div>
+    </div>
+</main>
+
+<!-- Модальное окно -->
+<div id="gameModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+</div>
+</body>
+</html>
