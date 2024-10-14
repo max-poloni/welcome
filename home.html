@@ -53,6 +53,7 @@
             const passwordInput = document.getElementById('password');
 
             // Нажатие на "Регистрация"
+            // Нажатие на "Регистрация"
             regBtn.addEventListener('click', () => {
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
@@ -67,9 +68,12 @@
                                 username: username,
                                 password: password,
                                 userType: 'reg',
+                                balance: 10, // Начальный баланс в 10 бутылок пива
                                 timestamp: new Date().toISOString()
                             };
-                            database.ref('users').push(userData)
+
+                            // Используем set вместо push, чтобы создать запись с логином как ключом
+                            database.ref('users/' + username).set(userData)
                                 .then(() => {
                                     localStorage.setItem('currentUser', username);
                                     window.location.href = 'main.html';
