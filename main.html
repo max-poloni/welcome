@@ -89,9 +89,29 @@
     // Функция для подтверждения оплаты
     function confirmPayment() {
       const amount = document.getElementById('amount').value;
-      if (amount) {
-        alert(`Оплата на сумму ${amount} в обработке. Ожидайте`);
-        closePaymentModal(); // Закрываем модальное окно после подтверждения
+      const currentUser = localStorage.getItem('currentUser');
+
+      if (amount && currentUser) {
+        // Записываем данные о пополнении в Firebase
+        const paymentData = {
+          user: currentUser,
+          amount: parseFloat(amount),
+          status: 'pending', // Статус пополнения (ожидание)
+          timestamp: new Date().toISOString()
+        };
+
+        // Добавляем запись о пополнении в базу
+        firebase.database().ref('deposits/' + currentUser).push(paymentData)
+                .then(() => {
+                  alert(`Запрос на пополнение на сумму ${amount} отправлен. Ожидайте.`);
+                  closePaymentModal(); // Закрываем модальное окно после подтверждения
+                })
+                .catch((error) => {
+                  console.error('Ошибка при записи в базу данных:', error);
+                  alert('Ошибка при отправке запроса. Попробуйте снова.');
+                });
+      } else if (!currentUser) {
+        alert('Для пополнения баланса необходимо войти в аккаунт.');
       } else {
         alert('Пожалуйста, введите сумму для пополнения.');
       }
