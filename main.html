@@ -1,157 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T173410KK"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T173410KK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8T173410KK');
+  </script>
 
-        gtag('config', 'G-8T173410KK');
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
-    <link rel="stylesheet" href="styless-main.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Главная страница</title>
+  <link rel="stylesheet" href="styless-main.css">
+  <link rel="icon" href="default_favicon.ico" type="image/x-icon">
 
-    <script>
-        // Firebase конфигурация
-        const firebaseConfig = {
-            apiKey: "API_KEY",
-            authDomain: "beer-58b91.firebaseapp.com",
-            databaseURL: "https://beer-58b91-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "beer-58b91",
-            storageBucket: "beer-58b91.appspot.com",
-            messagingSenderId: "MESSAGING_SENDER_ID",
-            appId: "APP_ID"
-        };
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+  <!-- Подключаем новые скрипты -->
+  <script src="scripts/firebase-config.js"></script>
+  <script src="scripts/user.js"></script>
+  <script src="scripts/games.js"></script>
+  <script src="scripts/modals.js"></script>
 
-        // Функция для загрузки данных пользователя из localStorage
-        function loadUserData() {
-            const username = localStorage.getItem('currentUser');
-            if (username) {
-                const userRef = database.ref('users/' + username);
-
-                userRef.once('value').then((snapshot) => {
-                    let userData = snapshot.val();
-                    if (userData) {
-                        if (!userData.balance) {
-                            userData.balance = 10;
-                            userRef.update({ balance: userData.balance });
-                        }
-                        document.getElementById('username').innerText = `Username: ${username}`;
-                        document.getElementById('balance').innerHTML = `Баланс: ${userData.balance} 🍺`;
-                    } else {
-                        document.getElementById('username').innerText = 'Username: Гость';
-                        document.getElementById('balance').innerText = 'Баланс: 0 🍺';
-                    }
-                });
-            } else {
-                document.getElementById('username').innerText = 'Username: Гость';
-                document.getElementById('balance').innerText = 'Баланс: 0 🍺';
-            }
-        }
-
-        // Вызываем эту функцию при загрузке страницы
-        window.onload = function () {
-            loadUserData();
-            loadGames();
-        };
-
-        // Функция для открытия модального окна
-        function openModal(gameName) {
-            const modal = document.getElementById('gameModal');
-            modal.style.display = 'block';
-            if (gameName === 'Beer Collect') {
-                loadGame1();
-            } else {
-                document.getElementById('modalContent').innerText = `Информация о ${gameName}`;
-            }
-        }
-
-        // Функция для загрузки Game 1
-        function loadGame1() {
-            const modalContent = document.getElementById('modalContent');
-            fetch('game1.html')
-                .then(response => response.text())
-                .then(data => {
-                    modalContent.innerHTML = data;
-                    // Выполняем скрипт из game1.html
-                    const script = modalContent.querySelector('script');
-                    if (script) {
-                        eval(script.textContent);
-                    }
-                })
-                .catch(error => console.error('Ошибка при загрузке game1.html:', error));
-        }
-
-        // Закрытие модального окна при клике вне его
-        window.onclick = function(event) {
-            const modal = document.getElementById('gameModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Функция для загрузки игр из базы данных
-        function loadGames() {
-            const gamesRef = database.ref('games');
-            gamesRef.once('value').then((snapshot) => {
-                const gamesContainer = document.querySelector('.slider');
-                gamesContainer.innerHTML = '';
-                snapshot.forEach((childSnapshot) => {
-                    const gameData = childSnapshot.val();
-                    console.log(gameData);
-                    const gameCard = document.createElement('div');
-                    gameCard.className = 'game-card';
-                    gameCard.onclick = () => openModal(gameData.name);
-
-                    const avatarUrl = gameData.avatar || 'default_avatar.jpg';
-                    const activePlayers = gameData.activePlayers || 0;
-
-                    gameCard.innerHTML = `
-                        <img src="${avatarUrl}" alt="${gameData.name}">
-                        <h3>${gameData.name}</h3>
-                        <p>Активные игроки: ${activePlayers}</p>
-                    `;
-                    gamesContainer.appendChild(gameCard);
-                });
-
-                if (snapshot.numChildren() === 0) {
-                    console.log("Игры не найдены в базе данных.");
-                }
-            }).catch((error) => {
-                console.error("Ошибка при загрузке игр:", error);
-            });
-        }
-    </script>
+  <script>
+    // Запускаем все функции параллельно
+    window.onload = function () {
+      Promise.all([loadUserData(), loadGames()])
+              .then(() => {
+                console.log('Все данные загружены.');
+              })
+              .catch((error) => {
+                console.error('Ошибка при загрузке данных:', error);
+              });
+    };
+  </script>
 </head>
 <body>
 <header>
-    <h1>Games</h1>
-    <div id="username">Username: Гость</div>
-    <div id="balance">Баланс: 0 🍺</div>
+  <h1>Games</h1>
+  <div id="username">Username: Гость</div>
+  <div id="balance">Баланс: 0 🍺</div>
+  <button onclick="openDepositModal()" style="float: right; margin: 10px;">Деп</button>
 </header>
 <main>
-    <div class="slider">
-        <!-- Игры будут загружаться сюда динамически -->
-    </div>
+  <div class="slider">
+    <!-- Игры будут загружаться сюда динамически -->
+  </div>
 </main>
 
-<!-- Модальное окно -->
-<div id="gameModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="document.getElementById('gameModal').style.display='none'">&times;</span>
-        <div id="modalContent"></div>
-    </div>
+<!-- Модальное окно с инструкцией по пополнению баланса -->
+<div id="depositModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeDepositModal()">&times;</span>
+    <h2>Инструкция по пополнению баланса</h2>
+    <p>Чтобы пополнить баланс, выполните следующие шаги:</p>
+    <ol>
+      <li>Перейдите на страницу пополнения.</li>
+      <li>Выберите желаемую сумму пополнения.</li>
+      <li>Подтвердите транзакцию.</li>
+      <li>Ваш баланс будет обновлён.</li>
+    </ol>
+  </div>
 </div>
+
+<!-- Модальное окно для игр -->
+<div id="gameModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('gameModal').style.display='none'">&times;</span>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
 </body>
 </html>
