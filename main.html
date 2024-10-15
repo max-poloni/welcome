@@ -28,115 +28,86 @@
   <script src="scripts/modals.js"></script>
 
   <script>
-    // Функция для генерации случайного числа пользователей от 100 до 500
-    // Функция для генерации случайного числа пользователей от 100 до 500
-    function generateRandomUserCount() {
-      return Math.floor(Math.random() * (500 - 100 + 1)) + 100; // Генерирует число от 100 до 500
-    }
-
-    // Функция для генерации случайного числа пользователей от 100 до 500
-    function generateRandomUserCount() {
-      return Math.floor(Math.random() * (500 - 100 + 1)) + 100; // Генерирует число от 100 до 500
-    }
-
-    // Функция для отображения количества пользователей
-    function displayUserCount() {
-      const totalUsers = generateRandomUserCount();
-      document.getElementById('userCount').innerText = `Пользователи: ${totalUsers}`;
-
-      // Генерируем количество пользователей для каждой игры
-      const gameUserCounts = calculateGameUserCounts(totalUsers);
-      console.log('Количество пользователей для каждой игры:', gameUserCounts); // Отладочное сообщение
-      updateGameUserDisplays(gameUserCounts);
-    }
-
-    // Функция для расчета количества пользователей для каждой игры
-    function calculateGameUserCounts(totalUsers) {
-      const gameUserCounts = [];
-      const gameCount = 5; // Количество игр
-
-      // Устанавливаем количество пользователей для первой игры (80%)
-      const firstGameUsers = Math.floor(totalUsers * 0.8);
-      gameUserCounts.push(firstGameUsers);
-
-      let remainingUsers = totalUsers - firstGameUsers;
-
-      // Распределяем оставшихся пользователей случайным образом между остальными играми
-      for (let i = 1; i < gameCount; i++) {
-        const usersForGame = Math.floor(Math.random() * (remainingUsers / (gameCount - i))) + 1;
-        gameUserCounts.push(usersForGame);
-        remainingUsers -= usersForGame;
+    // Функция для проверки авторизованного пользователя
+    function checkAuth() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) {
+        // Загрузка данных пользователя из базы
+        firebase.database().ref('users/' + currentUser).once('value').then((snapshot) => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            document.getElementById('username').innerText = `Username: ${userData.username}`;
+            document.getElementById('balance').innerText = `Баланс: ${userData.balance} 🍺`;
+          } else {
+            alert('Ошибка при загрузке данных пользователя.');
+          }
+        }).catch((error) => {
+          console.error('Ошибка:', error);
+        });
+      } else {
+        // Если пользователь не авторизован, показываем гостевой режим
+        document.getElementById('username').innerText = 'Username: Гость';
+        document.getElementById('balance').innerText = 'Баланс: 0 🍺';
       }
-
-      // Если остались пользователи, добавляем их к последней игре
-      gameUserCounts[gameCount - 1] += remainingUsers;
-
-      console.log('Окончательное количество пользователей для каждой игры:', gameUserCounts); // Отладочное сообщение
-      return gameUserCounts;
     }
 
-    // Функция для обновления отображения количества пользователей для каждой игры
-    function updateGameUserDisplays(gameUserCounts) {
-      const gameElements = document.querySelectorAll('.game-users');
-      gameElements.forEach((element, index) => {
-        element.innerText = `Пользователи: ${gameUserCounts[index] || 0}`; // Добавлено условие на случай, если количество пользователей не задано
+    // Функция для генерации случайного числа от min до max
+    function getRandomUserCount(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Функция для загрузки данных пользователей
+    function loadUserData() {
+      return new Promise((resolve) => {
+        const userCount = getRandomUserCount(300, 777); // Генерируем случайное число от 300 до 777
+        document.getElementById('userCount').innerText = `Пользователи: ${userCount}`;
+        resolve();
       });
+    }
+
+    // Функция для открытия модального окна пополнения баланса
+    function openDepositModal() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) {
+        document.getElementById('paymentModal').style.display = 'block';
+      } else {
+        alert('Для пополнения баланса необходимо войти в аккаунт.');
+      }
+    }
+
+    // Функция для закрытия модального окна пополнения баланса
+    function closePaymentModal() {
+      document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    // Функция для отображения адреса кошелька
+    function displayWalletAddress() {
+      const walletInfo = document.getElementById('walletInfo');
+      walletInfo.style.display = 'block'; // Показываем информацию о кошельке
+    }
+
+    // Функция для подтверждения оплаты
+    function confirmPayment() {
+      const amount = document.getElementById('amount').value;
+      if (amount) {
+        alert(`Оплата на сумму ${amount} в обработке. Ожидайте`);
+        closePaymentModal(); // Закрываем модальное окно после подтверждения
+      } else {
+        alert('Пожалуйста, введите сумму для пополнения.');
+      }
     }
 
     // Запускаем все функции параллельно
     window.onload = function () {
-      Promise.all([loadUserData(), loadGames()])
+      checkAuth(); // Проверяем авторизацию пользователя
+      loadUserData() // Загружаем количество пользователей
               .then(() => {
-                displayUserCount(); // Отображаем случайное количество пользователей
-                console.log('Все данные загружены.');
+                console.log('Данные пользователей загружены.');
               })
               .catch((error) => {
-                console.error('Ошибка при загрузке данных:', error);
+                console.error('Ошибка при загрузке данных пользователей:', error);
               });
-    };
-
-    // Функция для расчета количества пользователей для каждой игры
-    function calculateGameUserCounts(totalUsers) {
-      const gameUserCounts = [];
-      const gameCount = 5; // Количество игр
-
-      // Устанавливаем количество пользователей для первой игры (80%)
-      const firstGameUsers = Math.floor(totalUsers * 0.8);
-      gameUserCounts.push(firstGameUsers);
-
-      let remainingUsers = totalUsers - firstGameUsers;
-
-      // Распределяем оставшихся пользователей случайным образом между остальными играми
-      for (let i = 1; i < gameCount; i++) {
-        const usersForGame = Math.floor(Math.random() * (remainingUsers / (gameCount - i))) + 1;
-        gameUserCounts.push(usersForGame);
-        remainingUsers -= usersForGame;
-      }
-
-      // Если остались пользователи, добавляем их к последней игре
-      gameUserCounts[gameCount - 1] += remainingUsers;
-
-      return gameUserCounts;
-    }
-
-    // Функция для обновления отображения количества пользователей для каждой игры
-    function updateGameUserDisplays(gameUserCounts) {
-      const gameElements = document.querySelectorAll('.game-users');
-      gameElements.forEach((element, index) => {
-        element.innerText = `Пользователи: ${gameUserCounts[index]}`;
-      });
-    }
-
-    // Запускаем все функции параллельно
-    window.onload = function () {
-      Promise.all([loadUserData(), loadGames()])
-              .then(() => {
-                displayUserCount(); // Отображаем случайное количество пользователей
-                console.log('Все данные загружены.');
-              })
-              .catch((error) => {
-                console.error('Ошибка при загрузке данных:', error);
-              });
+      loadGames(); // Загружаем игры
     };
   </script>
 </head>
@@ -173,19 +144,20 @@
   </div>
 </main>
 
-
 <!-- Модальное окно с инструкцией по пополнению баланса -->
-<div id="depositModal" class="modal">
+<div id="paymentModal" class="modal" style="display:none;">
   <div class="modal-content">
-    <span class="close" onclick="closeDepositModal()">&times;</span>
-    <h2>Инструкция по пополнению баланса</h2>
-    <p>Чтобы пополнить баланс, выполните следующие шаги:</p>
-    <ol class="instruction-list">
-      <li><span class="step-number">1.</span> Перейдите на страницу пополнения.</li>
-      <li><span class="step-number">2.</span> Выберите желаемую сумму пополнения.</li>
-      <li><span class="step-number">3.</span> Подтвердите транзакцию.</li>
-      <li><span class="step-number">4.</span> Ваш баланс будет обновлён.</li>
-    </ol>
+    <span class="close" onclick="closePaymentModal()">&times;</span>
+    <h2>Пополнение баланса</h2>
+    <label for="amount">Введите сумму пополнения:</label>
+    <input type="number" id="amount" placeholder="Сумма" />
+    <button onclick="displayWalletAddress()">Внести</button>
+
+    <div id="walletInfo" style="display:none;">
+      <p>Адрес кошелька TRC20 USDT:</p>
+      <p id="walletAddress">TXYZ1234567890ABCDEFGH</p>
+      <button onclick="confirmPayment()">Я оплатил</button>
+    </div>
   </div>
 </div>
 
