@@ -5,7 +5,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T173410KK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-8T173410KK');
   </script>
@@ -21,49 +21,27 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-  <!-- Подключаем новые скрипты -->
+  <!-- Подключаем скрипты -->
   <script src="scripts/firebase-config.js"></script>
   <script src="scripts/user.js"></script>
   <script src="scripts/games.js"></script>
   <script src="scripts/modals.js"></script>
+  <script src="scripts/auth.js"></script>
 
   <script>
-    // Функция для проверки авторизованного пользователя
-    function checkAuth() {
-      const currentUser = localStorage.getItem('currentUser');
-      if (currentUser) {
-        // Загрузка данных пользователя из базы
-        firebase.database().ref('users/' + currentUser).once('value').then((snapshot) => {
-          if (snapshot.exists()) {
-            const userData = snapshot.val();
-            document.getElementById('username').innerText = `Username: ${userData.username}`;
-            document.getElementById('balance').innerText = `Баланс: ${userData.balance} 🍺`;
-          } else {
-            alert('Ошибка при загрузке данных пользователя.');
-          }
-        }).catch((error) => {
-          console.error('Ошибка:', error);
-        });
-      } else {
-        // Если пользователь не авторизован, показываем гостевой режим
-        document.getElementById('username').innerText = 'Username: Гость';
-        document.getElementById('balance').innerText = 'Баланс: 0 🍺';
-      }
-    }
-
-    // Функция для генерации случайного числа от min до max
-    function getRandomUserCount(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    // Функция для загрузки данных пользователей
-    function loadUserData() {
-      return new Promise((resolve) => {
-        const userCount = getRandomUserCount(300, 777); // Генерируем случайное число от 300 до 777
-        document.getElementById('userCount').innerText = `Пользователи: ${userCount}`;
-        resolve();
-      });
-    }
+    // Запускаем все функции последовательно
+    window.onload = function () {
+      checkAuth()
+              .then(() => {
+                return loadUserData(); // Загружаем данные пользователя
+              })
+              .then(() => {
+                return loadGames(); // Загружаем игры
+              })
+              .catch((error) => {
+                console.error('Ошибка при загрузке:', error);
+              });
+    };
 
     // Функция для открытия модального окна пополнения баланса
     function openDepositModal() {
@@ -116,51 +94,19 @@
         alert('Пожалуйста, введите сумму для пополнения.');
       }
     }
-
-    // Запускаем все функции параллельно
-    window.onload = function () {
-      checkAuth(); // Проверяем авторизацию пользователя
-      loadUserData() // Загружаем количество пользователей
-              .then(() => {
-                console.log('Данные пользователей загружены.');
-              })
-              .catch((error) => {
-                console.error('Ошибка при загрузке данных пользователей:', error);
-              });
-      loadGames(); // Загружаем игры
-    };
   </script>
 </head>
 <body>
 <header>
-  <h1>Games</h1>
+  <img id="userAvatar" src="" alt="Аватар пользователя" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
   <div id="username">Username: Гость</div>
   <div id="balance">Баланс: 0 🍺</div>
   <div id="userCount">Пользователи: 0</div> <!-- Счётчик пользователей -->
   <button onclick="openDepositModal()" style="float: right; margin: 10px;">Деп</button>
 </header>
 <main>
-  <div class="slider">
-    <div class="game" id="game1">
-      <img src="game1.jpg" alt="Игра 1">
-      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 1 -->
-    </div>
-    <div class="game" id="game2">
-      <img src="game2.jpg" alt="Игра 2">
-      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 2 -->
-    </div>
-    <div class="game" id="game3">
-      <img src="game3.jpg" alt="Игра 3">
-      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 3 -->
-    </div>
-    <div class="game" id="game4">
-      <img src="game4.jpg" alt="Игра 4">
-      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 4 -->
-    </div>
-    <div class="game" id="game5">
-      <img src="game5.jpg" alt="Игра 5">
-      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 5 -->
-    </div>
+  <div id="gamesContainer" class="slider"> <!-- Контейнер для игр -->
+    <!-- Игры будут загружаться сюда динамически -->
   </div>
 </main>
 
