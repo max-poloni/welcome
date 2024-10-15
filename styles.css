@@ -1,140 +1,70 @@
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-}
-
-header {
-    background-color: #4CAF50;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #000000, #1c1c1c, #3d3d3d, #595959);
     color: white;
-    padding: 20px;
-    text-align: center;
-    display: flex; /* Используем flex для выравнивания элементов */
-    justify-content: space-between; /* Пространство между элементами */
-    align-items: center; /* Центрируем по вертикали */
-}
-
-#username, #balance, #userCount {
-    margin: 0; /* Убираем отступы */
-    padding: 5px; /* Добавляем немного отступов для удобства */
-}
-
-.slider {
+    height: 100vh;
     display: flex;
-    overflow-x: auto;
-    padding: 20px;
-    justify-content: center; /* Центрируем слайдер */
+    justify-content: center;
+    align-items: center;
 }
 
-.game-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 20px;
-    padding: 10px;
-    width: 220px; /* Увеличиваем ширину карточки игры */
-    cursor: pointer;
-    transition: transform 0.2s;
-    display: flex; /* Используем flex для выравнивания содержимого */
-    flex-direction: column; /* Вертикальное расположение содержимого */
-    align-items: center; /* Центрируем содержимое карточки */
-}
-
-.game-card:hover {
-    transform: scale(1.05);
-}
-
-.game-card img {
-    width: 100%;
-    height: auto; /* Автоматическая высота для сохранения пропорций */
-    border-radius: 5px;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    text-align: center;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Стили для слайдера */
-.slider {
-    display: flex;
-    overflow-x: auto;
-    padding: 10px;
-    scrollbar-width: thin;
-}
-
-.slider::-webkit-scrollbar {
-    height: 8px;
-}
-
-.slider::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.slider::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-.slider img {
-    height: 150px;
-    margin: 0 10px;
+.container {
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    transition: transform 0.2s;
+    padding: 30px;
+    text-align: center;
+    width: 350px;
 }
 
-.slider img:hover {
-    transform: scale(1.05);
+h1 {
+    margin-bottom: 20px;
 }
 
-/* Дополнительные стили для улучшения визуала */
-#depositModal h2 {
-    margin-top: 0; /* Убираем верхний отступ для заголовка */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #2a2a2a;
+    color: white;
 }
 
-.instruction-list {
-    list-style-type: none; /* Убираем стандартные маркеры списка */
-    padding: 0; /* Убираем внутренние отступы */
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
 }
 
-.instruction-list li {
-    display: flex; /* Используем flex для выравнивания */
-    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
-    margin-bottom: 10px; /* Отступ между пунктами списка */
+.reg-btn {
+    background-color: #00b894;
+    color: white;
 }
 
-.step-number {
-    margin-right: 10px; /* Отступ между номером и текстом */
-    font-weight: bold; /* Делаем номер жирным */
-    color: #4CAF50; /* Цвет номера, чтобы он выделялся */
+.auth-btn {
+    background-color: #0984e3;
+    color: white;
+}
+
+.go-btn {
+    background-color: #d63031;
+    color: white;
+    display: none;
+}
+
+.generate-password-btn {
+    background-color: #6c5ce7;
+    color: white;
+    display: none;
+}
+
+.password-section {
+    display: none;
 }
