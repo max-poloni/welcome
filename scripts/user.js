@@ -3,16 +3,14 @@
 function loadUserData() {
     return new Promise((resolve, reject) => {
         const username = localStorage.getItem('currentUser');
-        const cachedUserData = localStorage.getItem(`userData_${username}`);
 
-        if (cachedUserData) {
-            displayUserData(JSON.parse(cachedUserData));
-            resolve();
-        } else if (username) {
+        if (username) {
             const userRef = database.ref('users/' + username);
             userRef.once('value').then((snapshot) => {
                 const userData = snapshot.val();
+                console.log('Данные пользователя из Firebase:', userData); // Для отладки
                 if (userData) {
+                    // Сохранение данных пользователя в localStorage
                     localStorage.setItem(`userData_${username}`, JSON.stringify(userData));
                     displayUserData(userData);
                 } else {
@@ -31,9 +29,14 @@ function loadUserData() {
 }
 
 function displayUserData(userData) {
-    const username = localStorage.getItem('currentUser');
-    document.getElementById('username').innerText = `Username: ${username}`;
-    document.getElementById('balance').innerText = `Баланс: ${userData.balance || 0} 🍺`;
+    const usernameElement = document.getElementById('username');
+    const balanceElement = document.getElementById('balance');
+
+    // Обновление имени пользователя
+    usernameElement.innerText = 'Username: ' + userData.username;
+
+    // Обновление баланса
+    balanceElement.innerText = 'Баланс: ' + (userData.balance || 0) + ' 🍺'; // Если balance не установлен, показываем 0
 }
 
 function displayGuestData() {
