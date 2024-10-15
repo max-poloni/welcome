@@ -28,10 +28,110 @@
   <script src="scripts/modals.js"></script>
 
   <script>
+    // Функция для генерации случайного числа пользователей от 100 до 500
+    // Функция для генерации случайного числа пользователей от 100 до 500
+    function generateRandomUserCount() {
+      return Math.floor(Math.random() * (500 - 100 + 1)) + 100; // Генерирует число от 100 до 500
+    }
+
+    // Функция для генерации случайного числа пользователей от 100 до 500
+    function generateRandomUserCount() {
+      return Math.floor(Math.random() * (500 - 100 + 1)) + 100; // Генерирует число от 100 до 500
+    }
+
+    // Функция для отображения количества пользователей
+    function displayUserCount() {
+      const totalUsers = generateRandomUserCount();
+      document.getElementById('userCount').innerText = `Пользователи: ${totalUsers}`;
+
+      // Генерируем количество пользователей для каждой игры
+      const gameUserCounts = calculateGameUserCounts(totalUsers);
+      console.log('Количество пользователей для каждой игры:', gameUserCounts); // Отладочное сообщение
+      updateGameUserDisplays(gameUserCounts);
+    }
+
+    // Функция для расчета количества пользователей для каждой игры
+    function calculateGameUserCounts(totalUsers) {
+      const gameUserCounts = [];
+      const gameCount = 5; // Количество игр
+
+      // Устанавливаем количество пользователей для первой игры (80%)
+      const firstGameUsers = Math.floor(totalUsers * 0.8);
+      gameUserCounts.push(firstGameUsers);
+
+      let remainingUsers = totalUsers - firstGameUsers;
+
+      // Распределяем оставшихся пользователей случайным образом между остальными играми
+      for (let i = 1; i < gameCount; i++) {
+        const usersForGame = Math.floor(Math.random() * (remainingUsers / (gameCount - i))) + 1;
+        gameUserCounts.push(usersForGame);
+        remainingUsers -= usersForGame;
+      }
+
+      // Если остались пользователи, добавляем их к последней игре
+      gameUserCounts[gameCount - 1] += remainingUsers;
+
+      console.log('Окончательное количество пользователей для каждой игры:', gameUserCounts); // Отладочное сообщение
+      return gameUserCounts;
+    }
+
+    // Функция для обновления отображения количества пользователей для каждой игры
+    function updateGameUserDisplays(gameUserCounts) {
+      const gameElements = document.querySelectorAll('.game-users');
+      gameElements.forEach((element, index) => {
+        element.innerText = `Пользователи: ${gameUserCounts[index] || 0}`; // Добавлено условие на случай, если количество пользователей не задано
+      });
+    }
+
     // Запускаем все функции параллельно
     window.onload = function () {
       Promise.all([loadUserData(), loadGames()])
               .then(() => {
+                displayUserCount(); // Отображаем случайное количество пользователей
+                console.log('Все данные загружены.');
+              })
+              .catch((error) => {
+                console.error('Ошибка при загрузке данных:', error);
+              });
+    };
+
+    // Функция для расчета количества пользователей для каждой игры
+    function calculateGameUserCounts(totalUsers) {
+      const gameUserCounts = [];
+      const gameCount = 5; // Количество игр
+
+      // Устанавливаем количество пользователей для первой игры (80%)
+      const firstGameUsers = Math.floor(totalUsers * 0.8);
+      gameUserCounts.push(firstGameUsers);
+
+      let remainingUsers = totalUsers - firstGameUsers;
+
+      // Распределяем оставшихся пользователей случайным образом между остальными играми
+      for (let i = 1; i < gameCount; i++) {
+        const usersForGame = Math.floor(Math.random() * (remainingUsers / (gameCount - i))) + 1;
+        gameUserCounts.push(usersForGame);
+        remainingUsers -= usersForGame;
+      }
+
+      // Если остались пользователи, добавляем их к последней игре
+      gameUserCounts[gameCount - 1] += remainingUsers;
+
+      return gameUserCounts;
+    }
+
+    // Функция для обновления отображения количества пользователей для каждой игры
+    function updateGameUserDisplays(gameUserCounts) {
+      const gameElements = document.querySelectorAll('.game-users');
+      gameElements.forEach((element, index) => {
+        element.innerText = `Пользователи: ${gameUserCounts[index]}`;
+      });
+    }
+
+    // Запускаем все функции параллельно
+    window.onload = function () {
+      Promise.all([loadUserData(), loadGames()])
+              .then(() => {
+                displayUserCount(); // Отображаем случайное количество пользователей
                 console.log('Все данные загружены.');
               })
               .catch((error) => {
@@ -45,18 +145,34 @@
   <h1>Games</h1>
   <div id="username">Username: Гость</div>
   <div id="balance">Баланс: 0 🍺</div>
+  <div id="userCount">Пользователи: 0</div> <!-- Счётчик пользователей -->
   <button onclick="openDepositModal()" style="float: right; margin: 10px;">Деп</button>
 </header>
 <main>
   <div class="slider">
-    <img src="game1.jpg" alt="Игра 1">
-    <img src="game2.jpg" alt="Игра 2">
-    <img src="game3.jpg" alt="Игра 3">
-    <img src="game4.jpg" alt="Игра 4">
-    <img src="game5.jpg" alt="Игра 5">
-    <!-- Игры будут загружаться сюда динамически -->
+    <div class="game" id="game1">
+      <img src="game1.jpg" alt="Игра 1">
+      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 1 -->
+    </div>
+    <div class="game" id="game2">
+      <img src="game2.jpg" alt="Игра 2">
+      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 2 -->
+    </div>
+    <div class="game" id="game3">
+      <img src="game3.jpg" alt="Игра 3">
+      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 3 -->
+    </div>
+    <div class="game" id="game4">
+      <img src="game4.jpg" alt="Игра 4">
+      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 4 -->
+    </div>
+    <div class="game" id="game5">
+      <img src="game5.jpg" alt="Игра 5">
+      <div class="game-users">Пользователи: 0</div> <!-- Количество пользователей для игры 5 -->
+    </div>
   </div>
 </main>
+
 
 <!-- Модальное окно с инструкцией по пополнению баланса -->
 <div id="depositModal" class="modal">
@@ -64,11 +180,11 @@
     <span class="close" onclick="closeDepositModal()">&times;</span>
     <h2>Инструкция по пополнению баланса</h2>
     <p>Чтобы пополнить баланс, выполните следующие шаги:</p>
-    <ol>
-      <li>Перейдите на страницу пополнения.</li>
-      <li>Выберите желаемую сумму пополнения.</li>
-      <li>Подтвердите транзакцию.</li>
-      <li>Ваш баланс будет обновлён.</li>
+    <ol class="instruction-list">
+      <li><span class="step-number">1.</span> Перейдите на страницу пополнения.</li>
+      <li><span class="step-number">2.</span> Выберите желаемую сумму пополнения.</li>
+      <li><span class="step-number">3.</span> Подтвердите транзакцию.</li>
+      <li><span class="step-number">4.</span> Ваш баланс будет обновлён.</li>
     </ol>
   </div>
 </div>
@@ -76,7 +192,7 @@
 <!-- Модальное окно для игр -->
 <div id="gameModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="document.getElementById('gameModal').style.display='none'">&times;</span>
+    <span class="close" onclick="closeGameModal()">&times;</span>
     <div id="modalContent"></div>
   </div>
 </div>
