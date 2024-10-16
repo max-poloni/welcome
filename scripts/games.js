@@ -1,54 +1,69 @@
-// /scripts/games.js
 
 function loadGames() {
-    return new Promise((resolve, reject) => {
-        const gamesRef = database.ref('games');
-        gamesRef.once('value').then((snapshot) => {
-            const gamesContainer = document.querySelector('.slider');
-            gamesContainer.innerHTML = '';
-            snapshot.forEach((childSnapshot) => {
-                const gameData = childSnapshot.val();
+    const gamesContainer = document.getElementById('gamesContainer');
+    const gameModal = document.getElementById('gameModal');
+    const modalContent = document.getElementById('modalContent');
+
+ 
+    firebase.database().ref('games').once('value', (snapshot) => {
+        const games = snapshot.val();
+        if (games) {
+            Object.keys(games).forEach((gameId) => {
+                const game = games[gameId];
+
+                // Создаем карточку игры
                 const gameCard = document.createElement('div');
-                gameCard.className = 'game-card';
-                gameCard.onclick = () => openModal(gameData.name);
+                gameCard.classList.add('game-card');
 
-                const avatarUrl = gameData.avatar || 'default_avatar.jpg';
-                const img = document.createElement('img');
-                img.setAttribute('data-src', avatarUrl);
-                img.className = 'lazy-load';
+                // Создаем изображение игры
+                const gameImg = document.createElement('img');
+                gameImg.src = game.imageUrl || 'https://craftubrewery.com/upload/resize_cache/iblock/d0b/494_721_1d7a58ff99b324185ccb5ad5dfbdb5e85/d0b36dfe120bc4d29dafb2057d9e09f2.png'; // Подгружаем изображение игры или дефолтное
+                gameCard.appendChild(gameImg);
 
-                gameCard.appendChild(img);
-                gameCard.innerHTML += `<h3>${gameData.name}</h3><p>Активные игроки: ${gameData.activePlayers || 0}</p>`;
+                // Создаем заголовок игры
+                const gameTitle = document.createElement('h3');
+                gameTitle.textContent = game.name || 'Без названия'; 
+                gameCard.appendChild(gameTitle);
+
+                // Информация о количестве активных игроков
+                const activePlayers = document.createElement('p');
+                activePlayers.textContent = `Игроков: ${game.activePlayers || 0}`;
+                gameCard.appendChild(activePlayers);
+
+                // Добавляем обработчик клика для открытия игры в модальном окне
+                gameCard.addEventListener('click', () => {
+                    if (game.url) {
+                        // Очищаем предыдущее содержимое модалки
+                        modalContent.innerHTML = '';
+
+                        // Создаем iframe для отображения игры
+                        const iframe = document.createElement('iframe');
+                        iframe.src = game.url;
+                        iframe.style.width = '100%';
+                        iframe.style.height = '500px'; 
+                        iframe.style.border = 'none'; // Убираем границу у iframe
+
+                        // Добавляем iframe в модальное окно
+                        modalContent.appendChild(iframe);
+
+                        // Показываем модалку
+                        gameModal.style.display = 'block';
+                    } else {
+                        alert('URL игры не найден');
+                    }
+                });
+
+                // Добавляем карточку игры в контейнер
                 gamesContainer.appendChild(gameCard);
             });
-
-            if (snapshot.numChildren() === 0) {
-                console.log("Игры не найдены в базе данных.");
-            }
-
-            initLazyLoad();
-            resolve();
-        }).catch((error) => {
-            console.error('Ошибка при загрузке игр:', error);
-            reject(error);
-        });
+        } else {
+            console.log('Игры не найдены');
+        }
     });
 }
 
-function initLazyLoad() {
-    const lazyImages = document.querySelectorAll('img.lazy-load');
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.getAttribute('data-src');
-                img.classList.remove('lazy-load');
-                observer.unobserve(img);
-            }
-        });
-    });
 
-    lazyImages.forEach(img => {
-        imageObserver.observe(img);
-    });
+function closeGameModal() {
+    const gameModal = document.getElementById('gameModal');
+    gameModal.style.display = 'none';
 }
