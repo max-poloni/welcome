@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8T173410KK"></script>
@@ -10,9 +10,10 @@
     gtag('config', 'G-8T173410KK');
   </script>
 
+  <!--  -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Главная страница</title>
+  <title>Main F</title>
   <link rel="stylesheet" href="styless-main.css">
   <link rel="icon" href="default_favicon.ico" type="image/x-icon">
 
@@ -27,7 +28,7 @@
   <script src="scripts/games.js"></script>
   <script src="scripts/modals.js"></script>
   <script src="scripts/auth.js"></script>
-
+  <!--  -->
   <script>
     // Запускаем все функции последовательно
     window.onload = function () {
@@ -75,7 +76,7 @@
           user: currentUser,
           amount: parseFloat(amount),
           status: 'pending', // Статус пополнения (ожидание)
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
 
         // Добавляем запись о пополнении в базу
@@ -97,18 +98,34 @@
   </script>
 </head>
 <body>
-<header>
-  <img id="userAvatar" src="" alt="Аватар пользователя" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 10px;">
-  <div id="username">Username: Гость</div>
-  <div id="balance">Баланс: 0 🍺</div>
-  <div id="userCount">Пользователи: 0</div> <!-- Счётчик пользователей -->
-  <button onclick="openDepositModal()" style="float: right; margin: 10px;">Деп</button>
+<header class="header">
+  <div class="user-info">
+    <div>
+      <div id="username">User: </div>
+      <div class="balance-container">
+        <div id="balance">Beer: 🍺</div>
+        <button onclick="openDepositModal()" class="deposit-button">Деп</button>
+      </div>
+    </div>
+  </div>
+  <!-- Кнопка для открытия меню -->
+  <button class="open-menu-button" onclick="toggleMenu()">☰</button>
 </header>
+
+<!-- Выезжающее меню -->
+<div id="sideMenu" class="side-menu">
+  <a href="javascript:void(0)" class="close-button" onclick="toggleMenu()">&times;</a>
+  <a href="#">Home</a>
+  <a href="#">AB</a>
+  <a href="#">Tud</a>
+  <a href="#">Suda</a>
+</div>
 <main>
   <h2>Piv games</h2>
   <div id="gamesContainer" class="slider"> <!-- Контейнер для игр -->
     <!-- Игры будут загружаться сюда динамически -->
   </div>
+  <h2>N games</h2>
 </main>
 
 <!-- Модальное окно с инструкцией по пополнению баланса -->
@@ -117,17 +134,16 @@
     <span class="close" onclick="closePaymentModal()">&times;</span>
     <h2>Пополнение баланса</h2>
     <label for="amount">Введите сумму пополнения:</label>
-    <input type="number" id="amount" placeholder="Сумма" />
+    <input type="number" id="amount" placeholder="Сумма"/>
     <button onclick="displayWalletAddress()">Внести</button>
 
     <div id="walletInfo" style="display:none;">
       <p>Адрес кошелька TRC20 USDT:</p>
-      <p id="walletAddress">TXYZ1234567890ABCDEFGH</p>
+      <p id="walletAddress">TNQmLkAiNWQDEYRgLQFJYfw8JDHjFHjg8J</p>
       <button onclick="confirmPayment()">Я оплатил</button>
     </div>
   </div>
 </div>
-
 
 <!-- Модальное окно для игр -->
 <div id="gameModal" class="modal">
@@ -136,6 +152,17 @@
     <div id="modalContent"></div> <!-- Сюда будет загружаться iframe с игрой -->
   </div>
 </div>
+
+<script>
+  function toggleMenu() {
+    const sideMenu = document.getElementById("sideMenu");
+    if (sideMenu.style.width === "250px") {
+      sideMenu.style.width = "0";
+    } else {
+      sideMenu.style.width = "250px";
+    }
+  }
+</script>
 
 </body>
 </html>
