@@ -1,35 +1,99 @@
+:root {
+    --primary-bg-color: #000000;
+    --secondary-bg-color: #434343;
+    --tertiary-bg-color: #7a7a7a;
+    --quaternary-bg-color: #b5b5b5;
+    --modal-bg-color: rgba(0, 0, 0, 0.4);
+    --modal-content-bg-color: #fefefe;
+    --scrollbar-bg: #888;
+    --scrollbar-hover-bg: #555;
+    --text-color: #aaa;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     overflow-x: hidden; /* Отключаем горизонтальный скролл */
-    background-image: url('your-image-url.jpg'); /* Укажите URL вашего изображения */
-    background-size: cover; /* Подгоняем изображение под размер экрана */
-    background-position: center; /* Центрируем изображение */
+    background: linear-gradient(45deg, #ff0000, #0a0303, #000000, #ff00ff); /* Начальный градиентный фон */
+    background-size: 400% 400%; /* Увеличенный размер фона для плавности анимации */
+    animation: backgroundAnimation 8s ease infinite; /* Анимация фона */
+}
+@keyframes backgroundAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-header {
-    background-color: rgba(76, 175, 80, 0.8); /* Полупрозрачный цвет фона */
-    color: white;
-    padding: 20px;
-    text-align: center;
+.header {
+    width: 100%;
+    height: 60px; 
+    background: linear-gradient(45deg, #ff0000, #0a0303, #000000, #ff00ff); /* Начальный градиентный фон */
+    background-size: 400% 400%; /* Увеличенный размер фона для плавности анимации */
+    animation: headerAnimation 10s ease infinite; /* Анимация фона */
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: white;
 }
 
+@keyframes headerAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+header.header h1 {
+    margin: 0;
+    font-size: 1.5em; 
+}
+
+header.header nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 1em; /* Размер шрифта для навигационных ссылок */
+}
+
+h2 {
+    color: #ffffff; 
+    margin-left: 20px;
+}
 #username, #balance, #userCount {
     margin: 0;
     padding: 5px;
 }
 
+.balance-container {
+    display: flex;
+    align-items: center;
+}
+
+.balance-container #balance {
+    margin-right: 12px;
+}
+
 .slider {
     display: flex;
-    overflow-x: auto; /* Горизонтальный скролл */
+    overflow-x: auto; 
     padding: 20px;
     justify-content: flex-start;
-    gap: 10px; /* Отступы между карточками */
-    scrollbar-width: thin; /* Тонкий скроллбар */
+    gap: 10px; 
+    scrollbar-width: thin; 
     scroll-snap-type: x mandatory; /* Автопролистывание */
 }
 
@@ -38,19 +102,23 @@ header {
 }
 
 .slider::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--scrollbar-bg);
     border-radius: 4px;
 }
 
 .slider::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--scrollbar-hover-bg);
 }
 
 .game-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    background: linear-gradient(45deg, var(--primary-bg-color), var(--secondary-bg-color), var(--tertiary-bg-color), var(--quaternary-bg-color)); 
+    border: 5px solid;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(210, 255, 85, 0.85);
+    text-align: center;
     margin: 10px;
+    position: relative;
     padding: 10px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -60,6 +128,34 @@ header {
     flex-shrink: 0; /* Не уменьшаем карточки */
     width: 150px; /* Фиксированная ширина карточки */
     scroll-snap-align: center; /* Автопролистывание по центру */
+    z-index: 0;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: -5px; 
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg, #ff0000, #00ff00, #9c9cf8, #ff00ff); 
+    background-size: 400% 400%; 
+    z-index: -1; /* Задний план ниже содержимого карточки */
+    border-radius: 10px; 
+    filter: blur(5px); 
+    animation: gradientAnimation 5s infinite; 
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .game-card:hover {
@@ -68,8 +164,21 @@ header {
 
 .game-card img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: scale-down;
     border-radius: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.game-card h3 {
+    margin: 10px 0;
+    font-size: 1.2em; 
+    color: #ffffff;
+}
+
+.game-card p {
+    font-size: 1em; 
+    color: #ffffff;
 }
 
 .modal {
@@ -81,11 +190,11 @@ header {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5); 
 }
 
 .modal-content {
-    background-color: rgba(254, 254, 254, 0.9); /* Полупрозрачный фон для контента модального окна */
+    background: linear-gradient(45deg, #ffffff, #f0f0f0, #e0e0e0, #d0d0d0); 
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -95,33 +204,19 @@ header {
 }
 
 .close {
-    color: #aaa;
+    color: var(--text-color);
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
 }
 
-/* Стили для затемнения и блюра */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Затемнение */
-    backdrop-filter: blur(5px); /* Блюр фона */
-    z-index: -1; /* Позади других элементов */
-}
 
-/* Дополнительные стили для улучшения визуала */
 #depositModal h2 {
     margin-top: 0;
 }
@@ -171,4 +266,49 @@ body::before {
         width: auto;
         max-width: none;
     }
+}
+
+.open-menu-button {
+    font-size: 30px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+
+.side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.side-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-menu a:hover {
+    color: #f1f1f1;
+}
+
+.side-menu .close-button {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
 }
