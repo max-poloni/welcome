@@ -2,7 +2,6 @@
 
 [Start](https://max-poloni.github.io/welcome/home.html)
 
-1 PT = 5000 online users
 
 - Firebase | Realtime DB
 - Dynamic G catalog (Ready to test)
