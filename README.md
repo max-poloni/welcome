@@ -17,5 +17,6 @@
 
 2 Тест 
 50 0000 юзеров
+RPS 1,400 
 <img width="1113" alt="Screenshot 2024-10-17 at 22 31 42" src="https://github.com/user-attachments/assets/c96c63df-38ed-4b46-b907-21e76e2a92fd">
 
