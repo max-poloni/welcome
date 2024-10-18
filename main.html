@@ -110,22 +110,32 @@
 </script>
 <noscript><a href="https://www.livechat.com/chat-with/18729171/" rel="nofollow">Chat with us</a>, powered by <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
 
+  
 
 <header class="header">
-  <div class="user-info">
-    <div>
-      <div id="username">User: </div>
-      <div class="balance-container">
-        <div id="balance">Beer: 🍺</div>
-        <button onclick="openDepositModal()" class="deposit-button">Деп</button>
-      </div>
-    </div>
-  </div>
-  <!-- Кнопка для открытия меню -->
-  <button class="open-menu-button" onclick="toggleMenu()">☰</button>
+
+  <!-- Добавили контейнер -->
+  
+<div class="container"> 
+        <header class="header">
+            <div class="user-info">
+                <div>
+                    <div id="username">User: </div>
+                    <div class="balance-container">
+                        <div id="balance">Beer: 🍺</div>
+                        <button onclick="openDepositModal()" class="deposit-button">Деп</button>
+                    </div>
+                </div>
+            </div>
+          
+            <!-- Кнопка для открытия меню -->
+          
+            <button class="open-menu-button" onclick="toggleMenu()">☰</button>
+
 </header>
 
 <!-- Выезжающее меню -->
+  
 <div id="sideMenu" class="side-menu">
   <a href="javascript:void(0)" class="close-button" onclick="toggleMenu()">&times;</a>
   <a href="#">Home</a>
@@ -133,10 +143,17 @@
   <a href="#">Tud</a>
   <a href="#">Suda</a>
 </div>
+  
 <main>
   <h2>Piv games <span id="gamesCount">0</span></h2>
-  <div id="gamesContainer" class="slider"> <!-- Контейнер для игр -->
+
+      <!-- Контейнер для игр -->
+  
+  <div id="gamesContainer" class="slider">
+
+    
     <!-- Игры будут загружаться сюда динамически -->
+    
   </div>
   <h2>N games</h2>
 </main>
