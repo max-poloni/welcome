@@ -11,6 +11,9 @@
 }
 
 body {
+    height: 100%;
+    background-color: linear-gradient(45deg, #ff0000, #0a0303, #000000, #ff00ff);
+    color: white;
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -94,6 +97,7 @@ h2 {
     justify-content: flex-start;
     gap: 10px; 
     scrollbar-width: thin; 
+    -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory; /* Автопролистывание */
 }
 
