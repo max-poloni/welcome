@@ -257,10 +257,11 @@ h2 {
     .game-card {
         width: 120px; /* Уменьшаем ширину карточки на мобильных устройствах */
     }
-    
+
     .header {
         flex-direction: column; /* Изменяем направление flex для заголовка */
         align-items: flex-start;
+        position: relative; /* Убедитесь, что header остается в нормальном потоке */
     }
 
     h2 {
@@ -276,10 +277,12 @@ h2 {
         margin: 0; 
         padding: 10px 20px;
         font-size: 1em;
-        align-self: flex-end;
-        position: relative;
+        position: absolute; /* Используем абсолютное позиционирование */
+        right: 20px; /* Располагаем кнопку справа */
+        top: 15px; /* Располагаем кнопку ближе к верху */
     }
 }
+
 
 .open-menu-button {
     font-size: 30px;
