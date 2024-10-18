@@ -9,6 +9,7 @@
 - Be game v1.0 (Ready to test)
 - BCollectG (In Dev)
 - P2PG (Sprint Backlog)
+- Kafka ( In Dev)
 - K6
 
 Server - Air M1
