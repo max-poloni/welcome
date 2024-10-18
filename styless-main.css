@@ -238,35 +238,34 @@ h2 {
     color: #4CAF50;
 }
 
-/* Адаптивные стили для карточек */
-@media (max-width: 768px) {
-    .slider {
-        display: flex; /* Горизонтальный флекс-контейнер */
-        flex-wrap: nowrap; /* Без переноса элементов */
-        overflow-x: auto; /* Горизонтальный скроллинг */
-        gap: 10px;
-        scroll-snap-type: x mandatory; /* Автопролистывание по оси X */
-        padding-left: 10px;
+/* Адаптивные стили  */
+@media (max-width: 600px) {
+    .game-card {
+        width: 120px; /* Уменьшаем ширину карточки на мобильных устройствах */
+    }
+    
+    .header {
+        flex-direction: column; /* Изменяем направление flex для заголовка */
+        align-items: flex-start;
     }
 
-    .game-card {
-        width: 150px; /* Фиксированная ширина для двух карточек в ряд */
-        scroll-snap-align: center; /* Автопролистывание по центру карточки */
+    h2 {
+        font-size: 1.5em; /* Уменьшаем размер заголовков */
+    }
+
+    .balance-container {
+        flex-direction: column; /* Изменяем направление flex для контейнера баланса */
+        align-items: flex-start; /* Выравниваем по началу */
+    }
+
+    .deposit-button {
+        width: 100%; /* Кнопка занимает всю ширину */
+        margin-top: 10px; /* Отступ сверху */
     }
 }
 
-@media (min-width: 769px) {
-    .slider {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Сетка для больших экранов */
-        gap: 20px;
-    }
 
-    .game-card {
-        width: auto;
-        max-width: none;
-    }
-}
+
 
 .open-menu-button {
     font-size: 30px;
