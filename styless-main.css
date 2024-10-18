@@ -17,6 +17,8 @@ body, html {
     font-family: Arial, sans-serif;
     background:  linear-gradient(45deg, #ff0000, #0a0303, #000000, #ff00ff);
     overflow: hidden; 
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 /* Контейнер для всей страницы */
@@ -270,8 +272,11 @@ h2 {
     }
 
     .deposit-button {
-        width: 100%; /* Кнопка занимает всю ширину */
-        margin-top: 10px; /* Отступ сверху */
+        margin: 0; 
+        padding: 10px 20px;
+        font-size: 1em;
+        align-self: flex-end;
+        position: relative;
     }
 }
 
